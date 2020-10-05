@@ -12,18 +12,16 @@ import {
 import useAsync from './02-useAsync'
 
 function PokemonInfo({pokemonName}) {
-  const state = useAsync(
-    () => {
-      if (!pokemonName) {
-        return
-      }
-      return fetchPokemon(pokemonName)
-    },
-    {status: pokemonName ? 'pending' : 'idle'},
-    [pokemonName],
-  )
+  const {data: pokemon, status, error, run} = useAsync({
+    status: pokemonName ? 'pending' : 'idle',
+  })
 
-  const {data: pokemon, status, error} = state
+  React.useEffect(() => {
+    if (!pokemonName) {
+      return
+    }
+    run(fetchPokemon(pokemonName))
+  }, [pokemonName, run])
 
   if (status === 'idle' || !pokemonName) {
     return 'Submit a pokemon'
