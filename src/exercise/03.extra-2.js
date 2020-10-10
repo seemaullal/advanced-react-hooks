@@ -26,16 +26,20 @@ function pokemonCacheReducer(state, action) {
   }
 }
 
-// 🐨 Create a PokemonCacheContext
 const PokemonCacheContext = React.createContext();
 
-function PokemonCacheProvider(props) {
-  const [cache, dispatch] = React.useReducer(pokemonCacheReducer, {});
-  return <PokemonCacheContext.Provider value={{cache, dispatch}} {...props} />;
+function usePokemonCache() {
+  const context = React.useContext(PokemonCacheContext);
+  if (!context)
+    throw new Error(
+      'usePokemonCache should only be used inside of PokemonCacheContext.Provider, try wrapping your component in that',
+    );
+  const {cache, dispatch} = context;
+  return {cache, dispatch};
 }
 
 function PokemonInfo({pokemonName}) {
-  const {cache, dispatch} = React.useContext(PokemonCacheContext);
+  const {cache, dispatch} = usePokemonCache();
 
   const {data: pokemon, status, error, run, setData} = useAsync();
 
@@ -66,7 +70,7 @@ function PokemonInfo({pokemonName}) {
 }
 
 function PreviousPokemon({onSelect}) {
-  const {cache} = React.useContext(PokemonCacheContext);
+  const {cache} = usePokemonCache();
   return (
     <div>
       Previous Pokemon
@@ -87,8 +91,9 @@ function PreviousPokemon({onSelect}) {
 }
 
 function PokemonSection({onSelect, pokemonName}) {
+  const [cache, dispatch] = React.useReducer(pokemonCacheReducer, {});
   return (
-    <PokemonCacheProvider>
+    <PokemonCacheContext.Provider value={{cache, dispatch}}>
       <div style={{display: 'flex'}}>
         <PreviousPokemon onSelect={onSelect} />
         <div className="pokemon-info" style={{marginLeft: 10}}>
@@ -100,7 +105,7 @@ function PokemonSection({onSelect, pokemonName}) {
           </PokemonErrorBoundary>
         </div>
       </div>
-    </PokemonCacheProvider>
+    </PokemonCacheContext.Provider>
   );
 }
 
