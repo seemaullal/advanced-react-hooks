@@ -1,50 +1,50 @@
 // useCallback: custom hooks
 // http://localhost:3000/isolated/exercise/02.js
 
-import React from 'react'
+import React from 'react';
 import {
   fetchPokemon,
   PokemonForm,
   PokemonDataView,
   PokemonInfoFallback,
   PokemonErrorBoundary,
-} from '../pokemon'
-import useAsync from './02-useAsync'
+} from '../pokemon';
+import useAsync from './02-useAsync';
 
 function PokemonInfo({pokemonName}) {
   const {data: pokemon, status, error, run} = useAsync({
     status: pokemonName ? 'pending' : 'idle',
-  })
+  });
 
   React.useEffect(() => {
     if (!pokemonName) {
-      return
+      return;
     }
-    run(fetchPokemon(pokemonName))
-  }, [pokemonName, run])
+    run(fetchPokemon(pokemonName));
+  }, [pokemonName, run]);
 
   if (status === 'idle' || !pokemonName) {
-    return 'Submit a pokemon'
+    return 'Submit a pokemon';
   } else if (status === 'pending') {
-    return <PokemonInfoFallback name={pokemonName} />
+    return <PokemonInfoFallback name={pokemonName} />;
   } else if (status === 'rejected') {
-    throw error
+    throw error;
   } else if (status === 'resolved') {
-    return <PokemonDataView pokemon={pokemon} />
+    return <PokemonDataView pokemon={pokemon} />;
   }
 
-  throw new Error('This should be impossible')
+  throw new Error('This should be impossible');
 }
 
 function App() {
-  const [pokemonName, setPokemonName] = React.useState('')
+  const [pokemonName, setPokemonName] = React.useState('');
 
   function handleSubmit(newPokemonName) {
-    setPokemonName(newPokemonName)
+    setPokemonName(newPokemonName);
   }
 
   function handleReset() {
-    setPokemonName('')
+    setPokemonName('');
   }
 
   return (
@@ -57,7 +57,7 @@ function App() {
         </PokemonErrorBoundary>
       </div>
     </div>
-  )
+  );
 }
 
-export default App
+export default App;
